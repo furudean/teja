@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "concurrently --kill-others 'docker-compose up' 'vite dev'",
+		"dev": "concurrently --kill-others 'docker compose up' 'vite dev'",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
@@ -28,6 +28,7 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@prisma/client": "^4.13.0"
+		"@prisma/client": "^4.13.0",
+		"p-debounce": "^4.0.0"
 	}
 }

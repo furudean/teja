@@ -3,7 +3,11 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 export async function list_bans() {
-	const bans = await prisma.ban.findMany()
+	const bans = await prisma.ban.findMany({
+		where: {
+			revoked: null
+		}
+	})
 
 	return bans
 }
@@ -11,13 +15,22 @@ export async function list_bans() {
 /**
  * @param {object} arg
  * @param {string} arg.uuid
+ * @param {string} arg.username
  * @param {string?} arg.note
  */
-export async function add_ban({ uuid, note }) {
-	await prisma.ban.create({
-		data: {
-			uuid,
-			note
+export async function add_ban({ uuid, username, note }) {
+	await prisma.ban.upsert({
+		where: {
+			uuid
+		},
+		update: {
+			revoked: null,
+			note,
+			instated: new Date()
+		},
+		create: {
+			username,
+			uuid
 		}
 	})
 }
