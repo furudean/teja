@@ -8,10 +8,11 @@ datasource db {
 }
 
 model Ban {
-  uuid          String    @id @db.Uuid
-  username      String
-  instated      DateTime  @default(now())
-  last_modified DateTime  @updatedAt
-  revoked       DateTime?
-  note          String?
+  uuid           String    @id @db.Uuid
+  username       String
+  instated       DateTime  @default(now())
+  last_modified  DateTime  @updatedAt
+  revoked        DateTime?
+  note           String?
+  return_objects Boolean
 }

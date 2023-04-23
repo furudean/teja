@@ -4,6 +4,7 @@
 	"private": true,
 	"scripts": {
 		"dev": "concurrently --kill-others 'docker compose up' 'vite dev'",
+		"sync_db": "prisma db push",
 		"build": "vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",

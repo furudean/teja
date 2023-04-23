@@ -26,6 +26,8 @@ export async function name_to_agent_id({ username, lastname }) {
 	return data.agent_id
 }
 
+const DISPLAYNAME_USERNAME_MATCHER = /(\w+(?: \w+)?)(?: \((.*)\))?/
+
 /** @param {string} uuid */
 export async function agent_id_to_name(uuid) {
 	const res = await fetch('https://world.secondlife.com/resident/' + uuid)
@@ -34,9 +36,17 @@ export async function agent_id_to_name(uuid) {
 
 	const html = await res.text()
 
-	const name = html.match(/(?<=<title>)(.*)(?=<\/title>)/)?.[0]
+	const name_username = html.match(/(?<=<title>)(.*)(?=<\/title>)/)?.[0]
 
-	if (!name) throw Error('could not find username in ' + res.url)
+	if (!name_username) throw Error('could not find name in ' + res.url)
 
-	return name
+	// eslint-disable-next-line no-unused-vars
+	const match = name_username.match(DISPLAYNAME_USERNAME_MATCHER) ?? []
+
+	const username = match[2] ?? match[1]
+	const display_name = match[2]
+
+	if (!username) throw Error('could not find username in string ' + name_username)
+
+	return { display_name, username }
 }
