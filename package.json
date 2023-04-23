@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "concurrently --kill-others 'docker compose up' 'vite dev'",
 		"sync_db": "prisma db push",
-		"build": "vite build",
+		"build": "prisma generate && vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
