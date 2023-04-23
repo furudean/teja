@@ -22,7 +22,7 @@ export async function GET() {
 	const object_return = bans.map((ban) => (ban.return_objects ? '1' : '0'))
 	const usernames = bans.map((ban) => ban.username)
 
-	const maybe = zip_many(uuids, object_return, usernames).flat().join(':')
+	const maybe = zip_many(uuids, object_return, usernames).flat().join('::')
 
 	return new Response(maybe)
 }
