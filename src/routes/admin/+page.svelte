@@ -66,7 +66,7 @@
 	<input name="uuid" type="hidden" value={uuid} />
 
 	<label>
-		username
+		query username
 		<br />
 		<input name="username" type="text" required bind:value={username} on:input={on_change_name} />
 	</label>
