@@ -16,3 +16,13 @@ model Ban {
   note           String?
   return_objects Boolean
 }
+
+model Client {
+  object_key  String   @id @db.Uuid
+  object_name String
+  owner_key   String
+  owner_name  String
+  region      String
+  ip          String
+  last_ping   DateTime @updatedAt
+}

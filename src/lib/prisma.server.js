@@ -56,3 +56,23 @@ export async function remove_ban({ uuid }) {
 		}
 	})
 }
+
+/**
+ * @param {object} arg
+ * @param {string} arg.object_key
+ * @param {string} arg.object_name
+ * @param {string} arg.owner_key
+ * @param {string} arg.owner_name
+ * @param {string} arg.region
+ * @param {string} arg.ip
+ */
+export async function heartbeat({ object_key, object_name, owner_key, owner_name, region, ip }) {
+	const non_key = { object_name, owner_key, owner_name, region, ip }
+	await prisma.client.upsert({
+		where: {
+			object_key
+		},
+		create: { object_key, ...non_key },
+		update: non_key
+	})
+}
