@@ -23,6 +23,7 @@ model Client {
   owner_key   String
   owner_name  String
   region      String
+  position    String
   ip          String
   last_ping   DateTime @updatedAt
 }

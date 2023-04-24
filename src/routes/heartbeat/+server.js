@@ -26,6 +26,7 @@ export async function GET({ request }) {
 		owner_key: get('x-secondlife-owner-key'),
 		owner_name: get('x-secondlife-owner-name'),
 		region: get('x-secondlife-region'),
+		position: get('x-secondlife-local-position'),
 		ip: get('x-real-ip')
 	})
 
