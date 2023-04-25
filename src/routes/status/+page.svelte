@@ -49,10 +49,10 @@
 
 <p>updates every 10 sec!</p>
 
-{#each [...owner_groups.entries()] as [_, clients]}
+{#each [...owner_groups.entries()] as [owner_key, clients] (owner_key)}
 	<h2>
 		{clients[0].owner_name}
-		<span>({clients[0].owner_key})</span>
+		<span>({owner_key})</span>
 	</h2>
 	<table>
 		<thead>
@@ -62,7 +62,7 @@
 			<td>last ping</td>
 			<td>appeared</td>
 		</thead>
-		{#each clients as client}
+		{#each clients as client (client.object_key)}
 			<tr class:inactive={since(client.last_ping).round('minutes').minutes > 5}>
 				<td>{client.object_name}</td>
 				<td>{client.position}</td>
