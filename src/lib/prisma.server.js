@@ -96,7 +96,7 @@ export async function list_clients() {
 					.toString()
 			}
 		},
-		orderBy: [{ first_ping: 'asc' }, { owner_name: 'desc' }]
+		orderBy: [{ last_ping: 'asc' }, { first_ping: 'asc' }, { owner_name: 'desc' }]
 	})
 
 	return clients
