@@ -28,7 +28,7 @@
 		return map
 	}
 
-	$: owner_groups = group_by(data.clients, (client) => client.owner_name)
+	$: owner_groups = group_by(data.clients, (client) => client.owner_key)
 
 	onMount(() => {
 		const interval = setInterval(() => {
