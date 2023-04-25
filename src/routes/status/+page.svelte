@@ -45,6 +45,10 @@
 	<title>teja status</title>
 </svelte:head>
 
+<h1>teja status</h1>
+
+<p>updates every 10 sec!</p>
+
 {#each [...owner_groups.entries()] as [_, clients]}
 	<h2>
 		{clients[0].owner_name}
