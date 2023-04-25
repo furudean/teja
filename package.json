@@ -3,7 +3,7 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "concurrently --kill-others 'docker compose up' 'vite dev'",
+		"dev": "vite dev",
 		"sync_db": "prisma db push",
 		"build": "prisma generate && vite build",
 		"preview": "vite preview",
