@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client'
+import { Temporal } from 'temporal-polyfill'
 
 const prisma = new PrismaClient()
 
@@ -84,4 +85,19 @@ export async function heartbeat({
 		create: { object_key, ...non_key },
 		update: non_key
 	})
+}
+
+export async function list_clients() {
+	const clients = await prisma.client.findMany({
+		where: {
+			last_ping: {
+				gte: Temporal.Now.instant()
+					.subtract({ hours: 7 * 24 })
+					.toString()
+			}
+		},
+		orderBy: [{ first_ping: 'asc' }, { owner_name: 'desc' }]
+	})
+
+	return clients
 }

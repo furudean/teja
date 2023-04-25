@@ -30,6 +30,7 @@
 	"type": "module",
 	"dependencies": {
 		"@prisma/client": "^4.13.0",
-		"p-debounce": "^4.0.0"
+		"p-debounce": "^4.0.0",
+		"temporal-polyfill": "^0.1.1"
 	}
 }
