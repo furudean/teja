@@ -26,4 +26,5 @@ model Client {
   position    String   @default("")
   ip          String
   last_ping   DateTime @updatedAt
+  first_ping  DateTime @default(now())
 }
