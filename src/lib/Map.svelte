@@ -64,8 +64,12 @@
 </script>
 
 <svelte:head>
-	<script src="http://maps.secondlife.com/_scripts/sl.mapapi2.js"></script>
-	<link rel="stylesheet" type="text/css" href="http://maps.secondlife.com/_styles/sl.mapapi2.css" />
+	<script src="https://maps.secondlife.com/_scripts/sl.mapapi2.js"></script>
+	<link
+		rel="stylesheet"
+		type="text/css"
+		href="https://maps.secondlife.com/_styles/sl.mapapi2.css"
+	/>
 </svelte:head>
 
 <div class="map" bind:this={map_element} />
