@@ -19,3 +19,15 @@ th,
 td {
 	padding: 0.5em;
 }
+
+@keyframes blink {
+	0% {
+		background-color: white;
+	}
+	90% {
+		background-color: blue;
+	}
+	100% {
+		background-color: white;
+	}
+}

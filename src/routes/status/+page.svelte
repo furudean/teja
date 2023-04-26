@@ -2,6 +2,8 @@
 	import { invalidateAll } from '$app/navigation'
 	import { relative_date, since } from '$lib/date'
 	import { onMount } from 'svelte'
+	import SLMap from '$lib/Map.svelte'
+	import { local_to_lat_long, region_to_lat_long, translate } from '$lib/map'
 
 	/** @type {import('./$types').PageData} */
 	export let data
@@ -28,7 +30,17 @@
 		return map
 	}
 
+	/** @param {import(".prisma/client").Client} client */
+	const is_stale = (client) => {
+		return since(client.last_ping).round('minutes').minutes > 5
+	}
+
 	$: owner_groups = group_by(data.clients, (client) => client.owner_key)
+	$: points = data.clients
+		.filter((client) => !is_stale(client))
+		.map(({ position, region }) =>
+			translate(region_to_lat_long(region), local_to_lat_long(position))
+		)
 
 	onMount(() => {
 		const interval = setInterval(() => {
@@ -44,6 +56,8 @@
 <svelte:head>
 	<title>teja status</title>
 </svelte:head>
+
+<SLMap {points} />
 
 <h1>teja status</h1>
 
@@ -63,7 +77,7 @@
 			<td>appeared</td>
 		</thead>
 		{#each clients as client (client.object_key)}
-			<tr class:inactive={since(client.last_ping).round('minutes').minutes > 5}>
+			<tr class:inactive={is_stale(client)}>
 				<td>{client.object_name}</td>
 				<td>{client.position}</td>
 				<td>{client.region}</td>
