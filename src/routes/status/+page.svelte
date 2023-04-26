@@ -57,11 +57,10 @@
 	<title>teja status</title>
 </svelte:head>
 
-<SLMap {points} />
-
 <h1>teja status</h1>
-
 <p>updates every 10 sec!</p>
+
+<SLMap {points} />
 
 {#each [...owner_groups.entries()] as [owner_key, clients] (owner_key)}
 	<h2>
