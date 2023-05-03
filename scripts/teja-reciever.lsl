@@ -52,7 +52,6 @@ update_land_bans() {
         if (llListFindList(uuids, [uuid]) == -1) {
             llRemoveFromLandBanList(uuid);
             managed_bans = ListItemDelete(managed_bans, uuid);
-            llSay(0, llDumpList2String(managed_bans, ", "));
         }
     }
     
@@ -83,12 +82,6 @@ default
         llSetTimerEvent(60.0);
         
         llSay(0, "teja ban client online!");
-    }
-
-    touch_start(integer total_number)
-    {
-        query_bans();
-        llOwnerSay(llDumpList2String(troublemakers, "::"));
     }
     
     http_response(key request_id, integer status, list metadata, string body) {
