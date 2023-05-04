@@ -46,7 +46,8 @@ export async function agent_id_to_name(uuid) {
 	const username = match[2] ?? match[1]
 	const display_name = match[2]
 
-	if (!username) throw Error('could not find username in string ' + name_username)
+	if (!username)
+		throw Error('could not find username in string ' + name_username)
 
 	return { display_name, username }
 }

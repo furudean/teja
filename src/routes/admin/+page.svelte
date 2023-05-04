@@ -26,7 +26,10 @@
 		set('username', username)
 		set('display_name', display_name)
 
-		goto('?' + search_params.toString(), { keepFocus: true, replaceState: true })
+		goto('?' + search_params.toString(), {
+			keepFocus: true,
+			replaceState: true
+		})
 	}
 
 	async function autocomplete() {
@@ -68,7 +71,13 @@
 	<label>
 		query username
 		<br />
-		<input name="username" type="text" required bind:value={username} on:input={on_change_name} />
+		<input
+			name="username"
+			type="text"
+			required
+			bind:value={username}
+			on:input={on_change_name}
+		/>
 	</label>
 
 	<br />
