@@ -37,7 +37,7 @@ list ListItemDelete(list mylist, key element_old) {
 
 
 integer IsInList(list list_, string item) {
-    return llListFindList(list_, [item]) != -1
+    return llListFindList(list_, [item]) != -1;
 }
 
 
@@ -60,38 +60,7 @@ check_perms() {
         return;
     }
 
-    is_setup = TRUE
-}
-
-
-default {
-    state_entry() {
-        check_perms();
-    }
-
-    touch_start(integer num_detected) {
-        check_perms();
-
-        if (is_setup == TRUE) {
-            state active;
-        }
-    }
-
-    run_time_permissions(integer new_permissions) {
-        permissions = new_permissions;
-
-        if (PERMISSION_RETURN_OBJECTS & permissions) {
-            llSay(pressed, 0, "OK! objects may be returned by script.");
-        } else {
-            llSay(pressed, 0, "OK! objects will NOT be returned!");
-        }
-
-        check_perms();
-
-        if (is_setup == TRUE) {
-            state active;
-        }
-    }
+    is_setup = TRUE;
 }
 
 
@@ -140,6 +109,38 @@ update_land_bans() {
         }
     }
 }
+
+
+default {
+    state_entry() {
+        check_perms();
+    }
+
+    touch_start(integer num_detected) {
+        check_perms();
+
+        if (is_setup == TRUE) {
+            state active;
+        }
+    }
+
+    run_time_permissions(integer new_permissions) {
+        permissions = new_permissions;
+
+        if (PERMISSION_RETURN_OBJECTS & permissions) {
+            llSay(0, "OK! objects may be returned by script.");
+        } else {
+            llSay(0, "OK! objects will NOT be returned!");
+        }
+
+        check_perms();
+
+        if (is_setup == TRUE) {
+            state active;
+        }
+    }
+}
+
 
 state active {
     state_entry() {
