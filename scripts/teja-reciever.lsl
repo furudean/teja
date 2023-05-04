@@ -1,5 +1,5 @@
 string API_BASE_URL = "https://teja.himawari.fun";
-string VERSION = "1";
+string VERSION = "1.2-dev";
 
 // [ uuid, object_return, username, ... ]
 list troublemakers;
@@ -61,7 +61,7 @@ update_land_bans() {
     integer j;
     for (;j < strides;j++) {
         key uuid = llList2Key(uuids, j);
-        
+
         if (llListFindList(uuids, [uuid]) == -1) {
             llAddToLandBanList(uuid, 0);
             managed_bans += uuid;
@@ -70,7 +70,8 @@ update_land_bans() {
 }
 
 heartbeat() {
-    llHTTPRequest(API_BASE_URL + "/heartbeat", [], VERSION);
+    string url = API_BASE_URL + "/heartbeat?version=" + llEscapeURL(version);
+    llHTTPRequest(url, [], "");
 }
 
 default
@@ -79,8 +80,8 @@ default
     {
         query_bans();
         heartbeat();
-        llSetTimerEvent(60.0);
-        
+        llSetTimerEvent(120.0);
+
         llSay(0, "teja ban client online!");
     }
     
