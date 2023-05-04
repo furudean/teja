@@ -65,7 +65,7 @@ check_perms() {
 
 
 heartbeat() {
-    string url = API_BASE_URL + "/heartbeat?version=" + llEscapeURL(version);
+    string url = API_BASE_URL + "/heartbeat?version=" + llEscapeURL(VERSION);
     llHTTPRequest(url, [], "");
 }
 
