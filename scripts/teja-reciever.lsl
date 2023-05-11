@@ -6,8 +6,9 @@ list troublemakers;
 
 list managed_bans = [];
 key ban_query_request_id;
-integer permissions;
-integer is_setup;
+integer permissions_set = FALSE;
+integer permissions = 0;
+integer is_setup = FALSE;
 
 
 list StrideOfList(list src, integer stride, integer start, integer end) {
@@ -36,8 +37,8 @@ list ListItemDelete(list mylist, key element_old) {
 }
 
 
-integer IsInList(list list_, string item) {
-    return llListFindList(list_, [item]) != -1;
+integer IsInList(list _list, key item) {
+    return llListFindList(_list, [item]) >= 0;
 }
 
 
@@ -54,7 +55,7 @@ check_perms() {
         return;
     }
 
-    if (!permissions) {
+    if (!permissions_set) {
         llSay(0, "allow teja to return objects of troublemakers? (you should see a dialog)");
         llRequestPermissions(pressed, PERMISSION_RETURN_OBJECTS);
         return;
@@ -76,35 +77,36 @@ query_bans() {
 update_land_bans() {
     list ban_uuids = StrideOfList(troublemakers, 3, 0, -1);
     list ban_return_objects = StrideOfList(troublemakers, 3, 1, -1);
-    list ban_usernames = StrideOfList(troublemakers, 3, 2, -1);    
+    list ban_usernames = StrideOfList(troublemakers, 3, 2, -1);
 
     list managed_bans_copy = llList2List(managed_bans, 0, -1);
 
     // handle revoked ban
     integer i;
-    for (;i < llGetListLength(managed_bans);i++) {
+    for (; i < llGetListLength(managed_bans_copy); i++) {
         key uuid = llList2Key(managed_bans_copy, i);
 
         if (!IsInList(ban_uuids, uuid)) {
-            llRemoveFromLandBanList(uuid);
+            llSay(0, "unbanning " + (string)uuid);
+            // llRemoveFromLandBanList(uuid);
             managed_bans = ListItemDelete(managed_bans, uuid);
         }
     }
 
-    integer strides = llGetListLength(troublemakers) / 3;
-
     // handle new ban / object return
     integer j;
-    for (;j < strides;j++) {
+    for (; j < llGetListLength(ban_uuids); j++) {
         key uuid = llList2Key(ban_uuids, j);
         integer return_objects = llList2Integer(ban_return_objects, j);
 
         if (return_objects && (PERMISSION_RETURN_OBJECTS & permissions)) {
-            llReturnObjectsByOwner(uuid, OBJECT_RETURN_PARCEL);
+            // llReturnObjectsByOwner(uuid, OBJECT_RETURN_PARCEL);
+            llSay(0, "returning " + (string)uuid);
         }
 
         if (!IsInList(managed_bans, uuid)) {
-            llAddToLandBanList(uuid, 0);
+            // llAddToLandBanList(uuid, 0);
+            llSay(0, "banning " + (string)uuid);
             managed_bans += uuid;
         }
     }
@@ -126,6 +128,7 @@ default {
 
     run_time_permissions(integer new_permissions) {
         permissions = new_permissions;
+        permissions_set = TRUE;
 
         if (PERMISSION_RETURN_OBJECTS & permissions) {
             llSay(0, "OK! objects may be returned by script.");
@@ -144,8 +147,15 @@ default {
 
 state active {
     state_entry() {
+        query_bans();
+        heartbeat();
+
         llSay(0, "teja client setup OK! check https://teja.himawari.fun/status for status");
         llSay(0, "if you want to change any settings, please reset this script!");
+    }
+
+    touch_start(integer num_detected) {
+        query_bans();
     }
 
     timer() {
