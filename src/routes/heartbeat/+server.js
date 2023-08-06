@@ -18,9 +18,7 @@ import { heartbeat } from '$lib/prisma.server'
 export async function GET({ request }) {
 	// console.log(Object.fromEntries(request.headers.entries()))
 
-	// older version used body instead of query param
-	const script_version =
-		(await request.text()) ?? new URL(request.url).searchParams.get('version')
+	const search_params = new URL(request.url).searchParams
 
 	const get = (/** @type {string} */ key) => request.headers.get(key) ?? ''
 
@@ -32,7 +30,8 @@ export async function GET({ request }) {
 		region: get('x-secondlife-region'),
 		position: get('x-secondlife-local-position'),
 		ip: get('x-real-ip'),
-		script_version
+		script_version: search_params.get('version') || undefined,
+		permissions_mask: Number(search_params.get('perms')) || undefined
 	})
 
 	return new Response()
