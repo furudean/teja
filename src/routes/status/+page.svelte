@@ -98,7 +98,7 @@
 					</time>
 				</td>
 				<td>
-					{client.script_version}
+					{client.script_version || '1.0'}
 				</td>
 				<td>
 					{Boolean(PERMISSION_RETURN_OBJECTS & client.permissions_mask)}
