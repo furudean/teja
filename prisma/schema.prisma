@@ -18,13 +18,15 @@ model Ban {
 }
 
 model Client {
-  object_key  String   @id @db.Uuid
-  object_name String
-  owner_key   String
-  owner_name  String
-  region      String
-  position    String   @default("")
-  ip          String
-  last_ping   DateTime @updatedAt
-  first_ping  DateTime @default(now())
+  object_key       String   @id @db.Uuid
+  object_name      String
+  owner_key        String
+  owner_name       String
+  region           String
+  ip               String
+  last_ping        DateTime @updatedAt
+  position         String   @default("")
+  first_ping       DateTime @default(now())
+  script_version   String   @default("")
+  permissions_mask Int      @default(0)
 }

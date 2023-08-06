@@ -67,6 +67,8 @@ export async function remove_ban({ uuid }) {
  * @param {string} arg.region
  * @param {string} arg.position
  * @param {string} arg.ip
+ * @param {string | undefined} arg.script_version
+ * @param {number | undefined} arg.permissions_mask
  */
 export async function heartbeat({
 	object_key,
@@ -75,9 +77,20 @@ export async function heartbeat({
 	owner_name,
 	region,
 	position,
-	ip
+	ip,
+	script_version,
+	permissions_mask
 }) {
-	const non_key = { object_name, owner_key, owner_name, region, position, ip }
+	const non_key = {
+		object_name,
+		owner_key,
+		owner_name,
+		region,
+		position,
+		ip,
+		script_version,
+		permissions_mask
+	}
 	await prisma.client.upsert({
 		where: {
 			object_key
