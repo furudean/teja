@@ -19,7 +19,10 @@ CREATE TABLE "Client" (
     "owner_name" TEXT NOT NULL,
     "region" TEXT NOT NULL,
     "ip" TEXT NOT NULL,
-    "last_ping" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "last_ping" TIMESTAMP(3) NOT NULL,
+    "position" TEXT NOT NULL DEFAULT '',
+    "first_ping" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Client_pkey" PRIMARY KEY ("object_key")
 );
+

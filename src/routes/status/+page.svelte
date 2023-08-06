@@ -5,6 +5,8 @@
 	import SLMap from '$lib/Map.svelte'
 	import { local_to_lat_long, region_to_lat_long, translate } from '$lib/map'
 
+	const PERMISSION_RETURN_OBJECTS = 65536
+
 	/** @type {import('./$types').PageData} */
 	export let data
 
@@ -74,6 +76,8 @@
 			<td>region</td>
 			<td>last ping</td>
 			<td>appeared</td>
+			<td>script ver</td>
+			<td>obj return</td>
 		</thead>
 		{#each clients as client (client.object_key)}
 			<tr class:inactive={is_stale(client)}>
@@ -93,6 +97,12 @@
 						{relative_date(client.first_ping)}
 					</time>
 				</td>
+				<td>
+					{client.script_version || '1.0'}
+				</td>
+				<td>
+					{Boolean(PERMISSION_RETURN_OBJECTS & client.permissions_mask)}
+				</td>
 			</tr>
 		{/each}
 	</table>
@@ -105,7 +115,7 @@
 	}
 
 	table {
-		min-width: 800px;
+		min-width: 1000px;
 	}
 
 	.new {

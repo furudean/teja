@@ -18,6 +18,8 @@ import { heartbeat } from '$lib/prisma.server'
 export async function GET({ request }) {
 	// console.log(Object.fromEntries(request.headers.entries()))
 
+	const search_params = new URL(request.url).searchParams
+
 	const get = (/** @type {string} */ key) => request.headers.get(key) ?? ''
 
 	await heartbeat({
@@ -27,7 +29,9 @@ export async function GET({ request }) {
 		owner_name: get('x-secondlife-owner-name'),
 		region: get('x-secondlife-region'),
 		position: get('x-secondlife-local-position'),
-		ip: get('x-real-ip')
+		ip: get('x-real-ip'),
+		script_version: search_params.get('version') || undefined,
+		permissions_mask: Number(search_params.get('perms')) || undefined
 	})
 
 	return new Response()
