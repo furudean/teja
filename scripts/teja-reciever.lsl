@@ -1,5 +1,5 @@
 string VERSION = "1.2";
-integer TIMER = 180;
+float TIMER = 180.0;
 string API_BASE_URL = "https://teja.himawari.fun";
 
 // [ uuid, object_return, username, ... ]
