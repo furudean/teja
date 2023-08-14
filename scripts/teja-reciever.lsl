@@ -172,14 +172,14 @@ state active {
         query_bans();
         heartbeat();
 
+        llSetTimerEvent(TIMER);
+
         llSay(0, "teja client OK! check https://teja.himawari.fun/status for status. if you want to change settings, please reset script!");
     }
 
     timer() {
         query_bans();
         heartbeat();
-
-        llSetTimerEvent(TIMER);
     }
 
     http_response(key request_id, integer status, list metadata, string body) {
