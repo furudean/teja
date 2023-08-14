@@ -55,9 +55,6 @@
 	}
 
 	function on_submit() {
-		uuid = ''
-		username = ''
-
 		set_params()
 	}
 
@@ -109,7 +106,7 @@
 							{#if display_name}
 								({display_name})
 							{/if}
-						</a>!
+						</a>
 					</b>
 				</p>
 
@@ -131,7 +128,7 @@
 						name="note"
 						type="text"
 						placeholder="optional"
-						value={selected_user?.note}
+						value={selected_user?.note ?? ''}
 					/>
 				</label>
 

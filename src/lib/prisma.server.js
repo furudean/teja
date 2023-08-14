@@ -3,7 +3,17 @@ import { Temporal } from 'temporal-polyfill'
 
 const prisma = new PrismaClient()
 
-export async function list_bans() {
+export async function list_active_bans() {
+	const bans = await prisma.ban.findMany({
+		where: {
+			revoked: null
+		}
+	})
+
+	return bans
+}
+
+export async function list_relevant_bans() {
 	const bans = await prisma.ban.findMany({
 		where: {
 			OR: [

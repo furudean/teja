@@ -1,4 +1,4 @@
-import { list_bans } from '$lib/prisma.server'
+import { list_active_bans } from '$lib/prisma.server'
 
 /**
  * @param {...unknown[]} arr
@@ -16,7 +16,7 @@ function zip_many(...arr) {
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET() {
-	const bans = await list_bans()
+	const bans = await list_active_bans()
 
 	const uuids = bans.map((ban) => ban.uuid)
 	const object_return = bans.map((ban) => (ban.return_objects ? '1' : '0'))

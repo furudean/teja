@@ -1,4 +1,4 @@
-import { add_ban, remove_ban, list_bans } from '$lib/prisma.server'
+import { add_ban, remove_ban, list_relevant_bans } from '$lib/prisma.server'
 import { formal_string } from '$lib/form'
 import { error, redirect } from '@sveltejs/kit'
 import { agent_id_to_name } from '$lib/sl.server'
@@ -9,7 +9,7 @@ export async function load({ locals }) {
 		throw redirect(302, 'login')
 	}
 
-	const bans = await list_bans()
+	const bans = await list_relevant_bans()
 
 	return {
 		bans: bans
