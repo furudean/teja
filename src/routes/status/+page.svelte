@@ -67,7 +67,7 @@
 {#each [...owner_groups.entries()] as [owner_key, clients] (owner_key)}
 	<h2>
 		{clients[0].owner_name}
-		<span>({owner_key})</span>
+		<span class="ms">({owner_key})</span>
 	</h2>
 	<table>
 		<thead>
@@ -82,7 +82,7 @@
 		{#each clients as client (client.object_key)}
 			<tr class:inactive={is_stale(client)}>
 				<td>{client.object_name}</td>
-				<td>{client.position}</td>
+				<td class="ms">{client.position}</td>
 				<td>{client.region}</td>
 				<td>
 					<time datetime={client.last_ping.toISOString()}>

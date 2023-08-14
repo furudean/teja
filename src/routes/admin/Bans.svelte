@@ -30,7 +30,7 @@
 					{relative_date(ban.last_modified)}
 				</time>
 			</td>
-			<td>{ban.uuid}</td>
+			<td class="ms">{ban.uuid}</td>
 		</tr>
 	{/each}
 </table>
