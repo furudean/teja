@@ -101,7 +101,13 @@
 					{client.script_version || '-'}
 				</td>
 				<td>
-					{Boolean(PERMISSION_RETURN_OBJECTS & client.permissions_mask)}
+					<input
+						type="checkbox"
+						checked={Boolean(
+							PERMISSION_RETURN_OBJECTS & client.permissions_mask
+						)}
+						readonly
+					/>
 				</td>
 			</tr>
 		{/each}

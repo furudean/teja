@@ -3,6 +3,7 @@
 	import p_debounce from 'p-debounce'
 	import { goto } from '$app/navigation'
 	import { page } from '$app/stores'
+	import Bans from './Bans.svelte'
 
 	/** @type {import('./$types').PageData} */
 	export let data
@@ -63,7 +64,7 @@
 	$: selected_user = data.bans.find((ban) => ban.uuid === uuid)
 </script>
 
-<pre><code>{JSON.stringify(data.bans, null, '\t')}</code></pre>
+<Bans bans={data.bans} />
 
 <form method="POST" use:enhance on:submit={on_submit}>
 	<input name="uuid" type="hidden" value={uuid} />
@@ -90,7 +91,7 @@
 
 	{#if uuid}
 		<fieldset>
-			{#if selected_user}
+			{#if selected_user && !selected_user.revoked}
 				<p>
 					{selected_user.username} is BANNED
 					{#if selected_user.note}
@@ -112,10 +113,26 @@
 					</b>
 				</p>
 
+				{#if selected_user}
+					<p>
+						<i>
+							this user was previously banned at {selected_user?.instated.toLocaleString()}
+							{#if selected_user?.note}
+								for "{selected_user.note}"
+							{/if}
+						</i>
+					</p>
+				{/if}
+
 				<label>
 					reason
 					<br />
-					<input name="note" type="text" placeholder="optional" />
+					<input
+						name="note"
+						type="text"
+						placeholder="optional"
+						value={selected_user?.note}
+					/>
 				</label>
 
 				<br />

@@ -6,8 +6,20 @@ const prisma = new PrismaClient()
 export async function list_bans() {
 	const bans = await prisma.ban.findMany({
 		where: {
-			revoked: null
-		}
+			OR: [
+				{
+					revoked: null
+				},
+				{
+					revoked: {
+						gte: Temporal.Now.instant()
+							.subtract({ hours: 30 * 24 })
+							.toString()
+					}
+				}
+			]
+		},
+		orderBy: [{ revoked: 'desc' }, { instated: 'asc' }]
 	})
 
 	return bans
@@ -52,8 +64,7 @@ export async function remove_ban({ uuid }) {
 			uuid
 		},
 		data: {
-			revoked: new Date(),
-			note: null
+			revoked: new Date()
 		}
 	})
 }

@@ -20,6 +20,10 @@ td {
 	padding: 0.5em;
 }
 
+input[type='checkbox'][readonly] {
+	pointer-events: none;
+}
+
 @keyframes blink {
 	0% {
 		background-color: white;
