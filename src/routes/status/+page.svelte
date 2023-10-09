@@ -62,7 +62,8 @@
 <h1>teja status</h1>
 <p>updates every 10 sec!</p>
 
-<SLMap {points} />
+<SLMap {points} origin={region_to_lat_long('Lendrum (283136, 262912)')} />
+<SLMap {points} origin={region_to_lat_long('CONEJO ISLAND (227328, 263680)')} />
 
 {#each [...owner_groups.entries()] as [owner_key, clients] (owner_key)}
 	<h2>

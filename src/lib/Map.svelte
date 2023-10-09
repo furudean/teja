@@ -4,12 +4,12 @@
 	/** @type {L.LatLngLiteral[]} */
 	export let points
 
-	let mounted = false
-
-	const LENDRUM = {
-		lat: 262912 / 256,
-		lng: 283136 / 256
+	export let origin = {
+		lat: 0,
+		lng: 0
 	}
+
+	let mounted = false
 
 	/** @type {HTMLDivElement} */
 	let map_element
@@ -50,7 +50,7 @@
 
 	function load_map() {
 		map = window.SLMap(map_element)
-		map.setView([LENDRUM.lat + 0.5, LENDRUM.lng + 0.5], 8)
+		map.setView([origin.lat + 0.5, origin.lng + 0.5], 8)
 
 		// render_marker(LENDRUM)
 	}
@@ -78,6 +78,7 @@
 	.map {
 		width: 500px;
 		height: 500px;
+		display: inline-block;
 	}
 
 	:global(.leaflet-active-marker) {
