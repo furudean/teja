@@ -66,7 +66,7 @@
 
 <p>
 	{#if data.bans_synced}
-		{data.ban_count} bans, synced from admin prim
+		{data.ban_count} bans synchronized
 		<time datetime={data.bans_synced.toISOString()}>
 			{relative_date(data.bans_synced)}
 		</time>
@@ -76,7 +76,10 @@
 </p>
 
 {#each [...region_groups.entries()] as [region, clients] (region)}
-	<SLMap points={to_points(clients)} origin={region_to_lat_long(clients[0].region)} />
+	<SLMap
+		points={to_points(clients)}
+		origin={region_to_lat_long(clients[0].region)}
+	/>
 {/each}
 
 {#each [...owner_groups.entries()] as [owner_key, clients] (owner_key)}
