@@ -1,6 +1,8 @@
 .DS_Store
 node_modules
 /build
+bans.json
+bans.json.tmp
 /.svelte-kit
 /package
 .env

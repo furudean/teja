@@ -1,17 +1,18 @@
-string VERSION = "1.2";
-float TIMER = 180.0;
-string API_BASE_URL = "https://teja.himawari.fun";
+string VERSION = "2.0";
 
-// [ uuid, object_return, username, ... ]
+string API_BASE_URL = "https://teja.example.com"; // CHANGE ME
+
+string CLIENT_SECRET = "changeme"; // CHANGE ME
+
+float TIMER = 180.0;
+
+// [ uuid, username, ... ]
 list troublemakers;
 
 list managed_bans = [];
 
 key ban_query_request_id;
-integer permissions_set = FALSE;
-integer permissions = 0;
 
-integer is_setup = FALSE;
 integer query_attempts = 0;
 
 list StrideOfList(list src, integer stride, integer start, integer end) {
@@ -45,26 +46,13 @@ integer IsInList(list _list, string item) {
 }
 
 
-check_perms() {
-    key pressed = llDetectedKey(0);
-    key owner = llGetOwner();
-    key land_owner = llGetLandOwnerAt(llGetPos());
-    // key object_creator = llGetCreator();
-
-    // if (pressed != object_creator) { return; }
-
-    if (land_owner != owner) {
+integer is_land_owner() {
+    if (llGetLandOwnerAt(llGetPos()) != llGetOwner()) {
         llSay(0, "ERROR: object owner and land owner are NOT the same... if this is group land, please deed this prim to land so that i have the right permissions. when done, click this prim again to continue setup");
-        return;
+        return FALSE;
     }
 
-    if (!permissions_set) {
-        llSay(0, "allow teja to return objects of troublemakers? this is potentially destructive! (you should see a dialog)");
-        llRequestPermissions(pressed, PERMISSION_RETURN_OBJECTS);
-        return;
-    }
-
-    is_setup = TRUE;
+    return TRUE;
 }
 
 
@@ -72,7 +60,7 @@ heartbeat() {
     string obj_description = llList2String(
         llGetLinkPrimitiveParams(
             llGetLinkNumber() != 0,
-            [ PRIM_DESC ]), 
+            [ PRIM_DESC ]),
         0);
 
     if (llStringTrim(obj_description, STRING_TRIM) == "no_analytics_plz") {
@@ -80,20 +68,22 @@ heartbeat() {
     }
 
     string url = API_BASE_URL + "/heartbeat" +
-        "?version=" + llEscapeURL(VERSION) +
-        "&perms=" + (string)permissions;
+        "?version=" + llEscapeURL(VERSION);
 
-    llHTTPRequest(url, [], "");
+    llHTTPRequest(url, [
+        HTTP_CUSTOM_HEADER, "Authorization", "Bearer " + CLIENT_SECRET
+    ], "");
 }
 
 query_bans() {
-    ban_query_request_id = llHTTPRequest(API_BASE_URL + "/bans", [], "");
+    ban_query_request_id = llHTTPRequest(API_BASE_URL + "/bans", [
+        HTTP_BODY_MAXLENGTH, 16384,
+        HTTP_CUSTOM_HEADER, "Authorization", "Bearer " + CLIENT_SECRET
+    ], "");
 }
 
 update_land_bans() {
-    list ban_uuids = StrideOfList(troublemakers, 3, 0, -1);
-    list ban_return_objects = StrideOfList(troublemakers, 3, 1, -1);
-    list ban_usernames = StrideOfList(troublemakers, 3, 2, -1);
+    list ban_uuids = StrideOfList(troublemakers, 2, 0, -1);
 
     list managed_bans_copy = llList2List(managed_bans, 0, -1);
 
@@ -109,21 +99,15 @@ update_land_bans() {
         }
     }
 
-    // handle new ban / object return
+    // handle new ban
     integer j;
     for (; j < llGetListLength(ban_uuids); j++) {
         key uuid = llList2Key(ban_uuids, j);
-        integer return_objects = llList2Integer(ban_return_objects, j);
 
         if (!IsInList(managed_bans, uuid)) {
             llAddToLandBanList(uuid, 0);
             // llSay(0, "banning " + (string)uuid);
             managed_bans += uuid;
-        }
-
-        if (return_objects && (PERMISSION_RETURN_OBJECTS & permissions)) {
-            llReturnObjectsByOwner(uuid, OBJECT_RETURN_PARCEL);
-            // llSay(0, "returning " + (string)uuid);
         }
     }
 }
@@ -137,26 +121,7 @@ default {
     }
 
     touch_start(integer num_detected) {
-        check_perms();
-
-        if (is_setup == TRUE) {
-            state active;
-        }
-    }
-
-    run_time_permissions(integer new_permissions) {
-        permissions = new_permissions;
-        permissions_set = TRUE;
-
-        if (PERMISSION_RETURN_OBJECTS & permissions) {
-            llSay(0, "OK! objects may be returned by script.");
-        } else {
-            llSay(0, "OK! objects will NOT be returned!");
-        }
-
-        check_perms();
-
-        if (is_setup == TRUE) {
+        if (is_land_owner()) {
             state active;
         }
     }
@@ -174,7 +139,7 @@ state active {
 
         llSetTimerEvent(TIMER);
 
-        llSay(0, "teja client OK! check https://teja.himawari.fun/status for status. if you want to change settings, please reset script!");
+        llSay(0, "teja client OK! check " + API_BASE_URL + "/status for status.");
     }
 
     timer() {
@@ -183,19 +148,28 @@ state active {
     }
 
     http_response(key request_id, integer status, list metadata, string body) {
-        if (status >= 500) { 
+        if (request_id != ban_query_request_id) return;
+
+        if (status != 200) {
             query_attempts += 1;
 
-            if (query_attempts >= 3) {
-                llSay(0, "teja server is not responding...");
+            if (query_attempts == 3) {
+                if (status == 401) {
+                    llSay(0, "teja server rejected CLIENT_SECRET...");
+                } else {
+                    llSay(0, "teja server is not responding (status " + (string)status + ")...");
+                }
             }
 
             return;
         }
 
-        if (request_id == ban_query_request_id) {
-            troublemakers = llParseString2List(body, ["::"], []);
-            update_land_bans();
-        }
+        query_attempts = 0;
+
+        // keep nulls so an empty username doesn't shift the stride.
+        troublemakers = [];
+        if (body != "") troublemakers = llParseStringKeepNulls(body, ["::"], []);
+
+        update_land_bans();
     }
 }

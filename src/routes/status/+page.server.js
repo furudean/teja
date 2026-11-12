@@ -1,13 +1,10 @@
-import { list_clients } from '$lib/prisma.server'
+import { get_bans_synced, list_bans, list_clients } from '$lib/store.server'
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load() {
-	const clients = await list_clients()
-
 	return {
-		clients
+		clients: list_clients(),
+		ban_count: list_bans()?.length ?? 0,
+		bans_synced: get_bans_synced()
 	}
 }
-
-/** @type {import('./$types').Actions} */
-export const actions = {}

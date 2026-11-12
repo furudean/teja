@@ -12,17 +12,22 @@
 // 	'x-secondlife-shard': 'Production',
 // }
 
-import { heartbeat } from '$lib/prisma.server'
+import { error } from '@sveltejs/kit'
+import { env } from '$env/dynamic/private'
+import { has_bearer } from '$lib/auth.server'
+import { heartbeat } from '$lib/store.server'
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ request }) {
+	if (!has_bearer(request, env.CLIENT_SECRET)) throw error(401, 'bad secret')
+
 	// console.log(Object.fromEntries(request.headers.entries()))
 
 	const search_params = new URL(request.url).searchParams
 
 	const get = (/** @type {string} */ key) => request.headers.get(key) ?? ''
 
-	await heartbeat({
+	heartbeat({
 		object_key: get('x-secondlife-object-key'),
 		object_name: get('x-secondlife-object-name'),
 		owner_key: get('x-secondlife-owner-key'),
@@ -30,8 +35,7 @@ export async function GET({ request }) {
 		region: get('x-secondlife-region'),
 		position: get('x-secondlife-local-position'),
 		ip: get('x-real-ip'),
-		script_version: search_params.get('version') || undefined,
-		permissions_mask: Number(search_params.get('perms')) || undefined
+		script_version: search_params.get('version') ?? ''
 	})
 
 	return new Response()

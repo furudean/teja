@@ -5,8 +5,6 @@
 	import SLMap from '$lib/Map.svelte'
 	import { local_to_lat_long, region_to_lat_long, translate } from '$lib/map'
 
-	const PERMISSION_RETURN_OBJECTS = 65536
-
 	/** @type {import('./$types').PageData} */
 	export let data
 
@@ -32,17 +30,21 @@
 		return map
 	}
 
-	/** @param {import(".prisma/client").Client} client */
+	/** @param {import("$lib/store.server").Client} client */
 	const is_stale = (client) => {
 		return since(client.last_ping).round('minutes').minutes > 5
 	}
 
 	$: owner_groups = group_by(data.clients, (client) => client.owner_key)
-	$: points = data.clients
-		.filter((client) => !is_stale(client))
-		.map(({ position, region }) =>
-			translate(region_to_lat_long(region), local_to_lat_long(position))
-		)
+	$: region_groups = group_by(data.clients, (client) => client.region)
+
+	/** @param {import("$lib/store.server").Client[]} clients */
+	const to_points = (clients) =>
+		clients
+			.filter((client) => !is_stale(client))
+			.map(({ position, region }) =>
+				translate(region_to_lat_long(region), local_to_lat_long(position))
+			)
 
 	onMount(() => {
 		const interval = setInterval(() => {
@@ -62,8 +64,20 @@
 <h1>teja status</h1>
 <p>updates every 10 sec!</p>
 
-<SLMap {points} origin={region_to_lat_long('Lendrum (283136, 262912)')} />
-<SLMap {points} origin={region_to_lat_long('CONEJO ISLAND (227328, 263680)')} />
+<p>
+	{#if data.bans_synced}
+		{data.ban_count} bans, synced from admin prim
+		<time datetime={data.bans_synced.toISOString()}>
+			{relative_date(data.bans_synced)}
+		</time>
+	{:else}
+		waiting for admin prim to sync bans...
+	{/if}
+</p>
+
+{#each [...region_groups.entries()] as [region, clients] (region)}
+	<SLMap points={to_points(clients)} origin={region_to_lat_long(clients[0].region)} />
+{/each}
 
 {#each [...owner_groups.entries()] as [owner_key, clients] (owner_key)}
 	<h2>
@@ -78,7 +92,6 @@
 			<td>last ping</td>
 			<td>appeared</td>
 			<td>script ver</td>
-			<td>obj return</td>
 		</thead>
 		{#each clients as client (client.object_key)}
 			<tr class:inactive={is_stale(client)}>
@@ -100,15 +113,6 @@
 				</td>
 				<td>
 					{client.script_version || '-'}
-				</td>
-				<td>
-					<input
-						type="checkbox"
-						checked={Boolean(
-							PERMISSION_RETURN_OBJECTS & client.permissions_mask
-						)}
-						readonly
-					/>
 				</td>
 			</tr>
 		{/each}

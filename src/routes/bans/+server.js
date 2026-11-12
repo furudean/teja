@@ -1,28 +1,55 @@
-import { list_active_bans } from '$lib/prisma.server'
+import { error } from '@sveltejs/kit'
+import { env } from '$env/dynamic/private'
+import { has_bearer } from '$lib/auth.server'
+import { list_bans, set_bans } from '$lib/store.server'
+
+const IS_UUID =
+	/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 /**
- * @param {...unknown[]} arr
+ * @type {import('./$types').RequestHandler}
  */
-function zip_many(...arr) {
-	/**
-	 * @param {any} _
-	 * @param {number} i
-	 */
-	const zip = (_, i) => arr.map((a) => a[i])
-	const length = arr[0].length // assume equal length for all arrays
+export async function GET({ request }) {
+	if (!has_bearer(request, env.CLIENT_SECRET)) throw error(401, 'bad secret')
 
-	return Array.from(Array(length).fill(0), zip)
+	const bans = list_bans()
+
+	if (!bans) throw error(503, 'ban list not synced yet')
+
+	const body = bans.flatMap((ban) => [ban.uuid, ban.username]).join('::')
+
+	return new Response(body)
 }
 
-/** @type {import('./$types').RequestHandler} */
-export async function GET() {
-	const bans = await list_active_bans()
+/**
+ * @type {import('./$types').RequestHandler}
+ */
+export async function PUT({ request }) {
+	if (!has_bearer(request, env.ADMIN_SECRET)) throw error(401, 'bad secret')
 
-	const uuids = bans.map((ban) => ban.uuid)
-	const object_return = bans.map((ban) => (ban.return_objects ? '1' : '0'))
-	const usernames = bans.map((ban) => ban.username)
+	/** @type {unknown} */
+	let body
 
-	const maybe = zip_many(uuids, object_return, usernames).flat().join('::')
+	try {
+		body = await request.json()
+	} catch {
+		throw error(400, 'body is not json')
+	}
 
-	return new Response(maybe)
+	if (!Array.isArray(body)) throw error(400, 'body is not a list')
+
+	const bans = body.map((item) => {
+		const uuid = String(item?.uuid ?? '')
+
+		if (!IS_UUID.test(uuid)) throw error(400, `bad uuid ${uuid}`)
+
+		return {
+			uuid: uuid.toLowerCase(),
+			username: String(item.username ?? '').replaceAll('::', '')
+		}
+	})
+
+	set_bans(bans)
+
+	return new Response(String(bans.length))
 }
