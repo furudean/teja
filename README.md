@@ -4,6 +4,8 @@ Shared land bans for Second Life parcels.
 
 ## Server
 
+you need a recent version of node. then:
+
 ```bash
 npm install
 npm run build  # outputs a build in the build directory
