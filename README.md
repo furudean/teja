@@ -13,10 +13,9 @@ cp .env.example .env  # edit the file and fill in the secrets
 node --env-file=.env build
 ```
 
-put nginx in front of it on a subdomain. `/status` shows the client map.
+use long random secrets for `CLIENT_SECRET` and `ADMIN_SECRET`, e.g. `openssl rand -hex 32`.
 
-the server refuses requests for a secret that isn't set. use long random
-secrets, e.g. `openssl rand -hex 32`.
+use a reverse proxy like nginx and put it on a subdomain. `/status` shows the client map.
 
 ## Second Life
 
