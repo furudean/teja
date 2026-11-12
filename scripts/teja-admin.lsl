@@ -1,14 +1,15 @@
 // teja admin script. reads the ban list from a notecard and pushes it to the
 // server.
 //
-// notecard format, one ban per line:
+// notecard format:
 //
 //     # lines starting with # are ignored
 //     <uuid>
-//     <uuid> spam            anything after the uuid is a note
+//     # anything after the uuid is a note
+//     <uuid> spam
 //
-// editing the notecard re-reads it and pushes changes right away. a failed
-// push retries until the server accepts it.
+// editing the notecard re-reads it and pushes changes right away.
+//
 
 string API_BASE_URL = "https://teja.example.com"; // CHANGE ME
 
