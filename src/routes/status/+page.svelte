@@ -62,14 +62,14 @@
 </svelte:head>
 
 <h1>teja status</h1>
-<p>updates every 10 sec!</p>
 
 <p>
 	{#if data.bans_synced}
-		{data.ban_count} bans synchronized
-		<time datetime={data.bans_synced.toISOString()}>
+		{data.ban_count} bans synchronized (<time
+			datetime={data.bans_synced.toISOString()}
+		>
 			{relative_date(data.bans_synced)}
-		</time>
+		</time>)
 	{:else}
 		waiting for admin prim to sync bans...
 	{/if}
